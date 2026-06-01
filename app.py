@@ -7,7 +7,7 @@ import song_marker
 
 def analyze_bilibili(url, threshold, min_duration, merge_gap, min_loudness_lift):
     if not url:
-        return "### ⚠️ Please enter a Bilibili URL or upload a file first."
+        return "### ⚠️ Please enter a Bilibili URL first.\n请输入一个有效的 B 站录播链接。"
     
     # Simple URL format checker
     match = re.search(r'(BV[a-zA-Z0-9]+|av[0-9]+)', url)
@@ -126,6 +126,19 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="pink", secondary_hue="rose")) a
         ],
         inputs=[url_input, threshold_slider, duration_slider, gap_slider, loudness_slider],
         label="Quick Test Examples (快捷测试示例)",
+    )
+    
+    # BIND THE HANDLERS
+    submit_btn.click(
+        fn=analyze_bilibili,
+        inputs=[url_input, threshold_slider, duration_slider, gap_slider, loudness_slider],
+        outputs=markdown_output
+    )
+    
+    url_input.submit(
+        fn=analyze_bilibili,
+        inputs=[url_input, threshold_slider, duration_slider, gap_slider, loudness_slider],
+        outputs=markdown_output
     )
     
     gr.Markdown(
