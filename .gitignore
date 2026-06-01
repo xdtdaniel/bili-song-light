@@ -1,0 +1,20 @@
+# Python virtual environment
+.venv/
+venv/
+ENV/
+
+# Python caching
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local cache and outputs
+work/
+outputs/
+logs/
+
+# Downloader temp files
+*.part
+*.ytdl
+*.temp
+.DS_Store
