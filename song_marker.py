@@ -57,10 +57,14 @@ def download_audio(
 ) -> Path:
     target = output_dir / f"{video_id}.%(ext)s"
     
-    # Try importing yt_dlp for pure Python execution
+    # Try using pure Python yt_dlp API first
     try:
         import yt_dlp
+        use_python_api = True
+    except ImportError:
+        use_python_api = False
         
+    if use_python_api:
         ydl_opts = {
             'format': format_selector,
             'outtmpl': str(target),
@@ -75,7 +79,7 @@ def download_audio(
         import shutil
         actual_downloader = downloader
         if downloader == "aria2c" and not shutil.which("aria2c"):
-            print("Warning: aria2c downloader requested but not found in PATH. Falling back to native downloader.")
+            print("Warning: aria2c downloader requested but not found in PATH. Using native downloader.")
             actual_downloader = None
             downloader_args = None
             
@@ -92,37 +96,39 @@ def download_audio(
             downloaded_path = Path(filename)
             if downloaded_path.exists():
                 return downloaded_path
+            else:
+                raise FileNotFoundError(f"yt-dlp download completed but file {downloaded_path} is missing.")
                 
-    except Exception as exc:
-        print(f"Python yt-dlp API failed or not available ({exc}). Falling back to CLI...")
+    else:
+        # CLI fallback (only if python yt_dlp is not installed)
+        print("Python yt_dlp package not installed. Falling back to CLI subprocess...")
+        require_command("yt-dlp")
+        cmd = [
+            "yt-dlp",
+            "--no-playlist",
+            "--retries",
+            str(retries),
+            "--fragment-retries",
+            "infinite",
+            "-f",
+            format_selector,
+            "-o",
+            str(target),
+            url,
+        ]
+        if downloader:
+            cmd[1:1] = ["--downloader", downloader]
+        if downloader_args:
+            cmd[1:1] = ["--downloader-args", downloader_args]
+        if http_chunk_size:
+            cmd[1:1] = ["--http-chunk-size", http_chunk_size]
+        run(cmd)
         
-    # CLI fallback
-    require_command("yt-dlp")
-    cmd = [
-        "yt-dlp",
-        "--no-playlist",
-        "--retries",
-        str(retries),
-        "--fragment-retries",
-        "infinite",
-        "-f",
-        format_selector,
-        "-o",
-        str(target),
-        url,
-    ]
-    if downloader:
-        cmd[1:1] = ["--downloader", downloader]
-    if downloader_args:
-        cmd[1:1] = ["--downloader-args", downloader_args]
-    if http_chunk_size:
-        cmd[1:1] = ["--http-chunk-size", http_chunk_size]
-    run(cmd)
-    
-    matches = sorted(path for path in output_dir.glob(f"{video_id}.*") if not path.name.endswith(".part") and path.suffix not in (".wav", ".part", ".ytdl"))
-    if not matches:
-        raise RuntimeError("yt-dlp finished but no source audio/video file was found.")
-    return matches[0]
+        matches = sorted(path for path in output_dir.glob(f"{video_id}.*") if not path.name.endswith(".part") and path.suffix not in (".wav", ".part", ".ytdl"))
+        if not matches:
+            raise RuntimeError("yt-dlp finished but no source audio/video file was found.")
+        return matches[0]
+
 
 
 
