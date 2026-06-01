@@ -1,3 +1,14 @@
+---
+title: Bilibili Song Segment Marker
+emoji: 💡
+colorFrom: pink
+colorTo: red
+sdk: gradio
+sdk_version: 4.36.1
+app_file: app.py
+pinned: false
+---
+
 # Bilibili Song Segment Marker (哔哩哔哩歌回路灯 / bili-song-light)
 
 A robust, heuristic-based digital signal processing (DSP) tool to automatically identify, mark, and generate timestamps for singing segments in Bilibili livestream playbacks or local video archives.
@@ -11,7 +22,7 @@ A robust, heuristic-based digital signal processing (DSP) tool to automatically 
 * **[中文版说明 (Chinese Version)](#中文版说明)**
   * [核心特性](#核心特性) | [免费网页端部署](#-免费网页端云部署-hugging-face-spaces) | [跨平台安装步骤](#跨平台环境准备) | [快速上手](#快速上手) | [调参建议](#调参建议) | [运行原理](#算法运行原理-dsp-信号处理)
 * **[English Version](#english-version)**
-  * [Core Features](#core-features) | [Free Web UI Cloud Deployment](#-free-web-ui-cloud-deployment-hugging-face-spaces) | [Cross-Platform Setup](#cross-platform-environment-setup) | [Quick Start](#quick-start) | [Parameter Tuning](#parameter-tuning-1) | [Under The Hood](#under-the-hood-dsp-theory)
+  * [Core Features](#core-features) | [Free Web UI Cloud Deployment](#-free-web-ui-cloud-deployment-hugging-face-spaces) | [Quick Start](#quick-start) | [Parameter Tuning](#parameter-tuning-1) | [Under The Hood](#under-the-hood-dsp-theory)
 
 ---
 
@@ -115,7 +126,7 @@ python song_marker.py \
   --downloader-args "aria2c:-x 4 -s 4 -k 1M --retry-wait=2 --max-tries=0" \
   --out outputs/BV1uUVf6QEMw_segments.md
 ```
-*(同一个 URL 二次运行会直接读取缓存，2 秒内即可秒出结果！)*
+*(同一个 URL 二次运行会直接读取缓存， 2 秒内即可秒出结果！)*
 
 #### 3. 命令行分析本地已有音视频
 如果你本地已经下载好了 `.mp4`、`.m4a`、`.mp3` 或 `.wav` 文件：
@@ -155,7 +166,7 @@ python song_marker.py \
 | `--min-loudness-lift` | `0.35` | 候选歌声片段相对于局部背景底噪的平均人声响度提升阈值。 |
 
 > [!TIP]
-> **过滤主播在 BGM 期间纯说话的误报：**
+> **过滤主播在 BGM 期间纯说话 of 误报：**
 > 如果主播在播放非常响亮的背景音乐（BGM）期间只是在杂谈说话，可以通过将 `--min-loudness-lift` 调高到 `0.35` 或 `0.40` 来解决。由于歌声通常伴随着持续的人声高能量抬升，提高该值能完美剪除“背景乐说话”的误报，只保留真正的唱歌片段！
 >
 > **捕捉超短的哼唱滑音或歌声插曲：**
