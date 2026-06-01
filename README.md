@@ -9,16 +9,17 @@ A robust, heuristic-based digital signal processing (DSP) tool to automatically 
 ## Quick Navigation / 快速导航
 
 * **[中文版说明 (Chinese Version)](#中文版说明)**
-  * [核心特性](#核心特性) | [跨平台安装步骤](#跨平台环境准备) | [快速上手](#快速上手) | [调参建议](#调参建议) | [运行原理](#算法运行原理-dsp-信号处理)
+  * [核心特性](#核心特性) | [免费网页端部署](#-免费网页端云部署-hugging-face-spaces) | [跨平台安装步骤](#跨平台环境准备) | [快速上手](#快速上手) | [调参建议](#调参建议) | [运行原理](#算法运行原理-dsp-信号处理)
 * **[English Version](#english-version)**
-  * [Core Features](#core-features) | [Cross-Platform Setup](#cross-platform-environment-setup) | [Quick Start](#quick-start) | [Parameter Tuning](#parameter-tuning-1) | [Under The Hood](#under-the-hood-dsp-theory)
+  * [Core Features](#core-features) | [Free Web UI Cloud Deployment](#-free-web-ui-cloud-deployment-hugging-face-spaces) | [Cross-Platform Setup](#cross-platform-environment-setup) | [Quick Start](#quick-start) | [Parameter Tuning](#parameter-tuning-1) | [Under The Hood](#under-the-hood-dsp-theory)
 
 ---
 
 ## 中文版说明
 
 ### 核心特性
-* **一体化流水线**：仅需单条 CLI 命令行，即可全自动处理从 B站下载、音频流提取到声学特征识别的全流程。
+* **网页端图形界面 (Web UI)**：内置轻量、美观的 Gradio 图形交互界面，滑块调参、实时查看结果一目了然！
+* **一体化流水线**：仅需单条 CLI 命令行或网页端一键运行，即可全自动处理下载、音频流提取到声学特征识别的全流程。
 * **流量与带宽优化**：默认下载 B站的 `worstaudio` 格式（如 67kbps mono 单声道极低码率流），下载多小时的长录播仅需极少带宽。
 * **持久化智能缓存**：全自动匹配并提取 B站 BV 视频号。若对同一个 URL 重复运行，将跳过下载，在 **2 秒内** 瞬时输出识别结果！
 * **人声响度提升过滤**：引入了动态相对响度（Loudness Lift）特征，在播放高能背景音乐（BGM）期间，能够完美滤除主播纯说话/杂谈的误报。
@@ -26,9 +27,23 @@ A robust, heuristic-based digital signal processing (DSP) tool to automatically 
 
 ---
 
+### ☁️ 免费网页端云部署 (Hugging Face Spaces)
+
+你可以完全免费地将本项目作为一个网页端工具（带有滑动条调参的 Web UI）部署在 Hugging Face Spaces 上，无需自己购买任何服务器或虚拟机！任何用户都可以通过浏览器直接访问并使用它。
+
+#### 一分钟部署教程：
+1. 注册并登录 [Hugging Face 官网](https://huggingface.co/)。
+2. 点击右上角头像，选择 **New Space** 来创建一个新的云空间。
+3. 填入空间名称（例如 `bili-song-light`），并在下方 SDK 选项中选择 **Gradio**。
+4. 硬件层级（Space Hardware）保持选择默认的 **CPU Basic (Free / 永久免费)**。
+5. 创建空间后，在页面中选择直接关联同步你的 GitHub 仓库（`xdtdaniel/bili-song-light`）即可完成全自动部署与后续持续构建更新！
+6. *云空间将自动读取 `packages.txt` 安装 ffmpeg，并加载 `app.py` 开启你专属的在线唱歌标记小网页！*
+
+---
+
 ### 跨平台环境准备
 
-运行本项目需要系统安装 `ffmpeg` (音频转换)、`yt-dlp` (音视频下载) 和 `aria2` (多线程加速，可选)。请根据您的操作系统选择相应的安装方式：
+如果您倾向于在本地命令行运行，系统需要安装 `ffmpeg` (音频转换)、`yt-dlp` (音视频下载) 和 `aria2` (多线程加速，可选)。请根据您的操作系统选择相应的安装方式：
 
 #### macOS (使用 Homebrew)
 ```bash
@@ -81,7 +96,13 @@ python -m pip install -r requirements.txt
 
 ### 快速上手
 
-#### 1. 运行 B 站录播链接分析
+#### 1. 启动本地网页端图形界面 (Web UI)
+在本地运行以下命令，即可在本地浏览器中直接使用图形界面调参和分析：
+```bash
+python app.py
+```
+
+#### 2. 命令行分析 B 站录播链接
 直接提供 B 站视频/录播的播放 URL，脚本会自动将最低码率音频流下载到本地的 `work/` 目录缓存起来，并生成唱歌时间戳：
 ```bash
 python song_marker.py \
@@ -96,7 +117,7 @@ python song_marker.py \
 ```
 *(同一个 URL 二次运行会直接读取缓存，2 秒内即可秒出结果！)*
 
-#### 2. 运行本地已有音视频分析
+#### 3. 命令行分析本地已有音视频
 如果你本地已经下载好了 `.mp4`、`.m4a`、`.mp3` 或 `.wav` 文件：
 ```bash
 python song_marker.py \
@@ -111,7 +132,7 @@ python song_marker.py \
 ---
 
 ### 输出格式
-脚本会自动在指定的输出路径生成 Markdown 表格，列出识别出的唱歌时间段 and 详细的声学诊断参数：
+脚本会自动在指定的输出路径生成 Markdown 表格，列出识别出的唱歌时间段和详细的声学诊断参数：
 
 ```markdown
 | start | end | duration | confidence | loudness_lift | voice_presence | pitch_stability |
@@ -148,7 +169,7 @@ python song_marker.py \
 2. **特征抽取**：按帧计算均方根能量（RMS）、过零率（ZCR）、频谱带宽（Spectral Bandwidth）以及谱平坦度（Spectral Flatness）。
 3. **人声追踪**：提取人声主要频段（180 Hz 至 3.5 kHz）以获取频域人声占比，并通过 `PiPTrack` 算法追踪各帧音高，计算音高在时间滑动窗口内的稳定性。
 4. **动态背景响度抬升**：以滑动大窗口的 25 分位数作为当前的动态局部背景底噪，将当前 RMS 响度与之作分贝差值计算，得到准确的动态人声抬升值。
-5. **平滑滤波与时间合并**：利用滑动平均窗口对置信度分数进行平滑去噪，根据阈值截取活跃段，自动合并相邻 of 短间距段，并最后利用长度和人声抬升滤波器过滤出高纯净度的歌声片段。
+5. **平滑滤波与时间合并**：利用滑动平均窗口对置信度分数进行平滑去噪，根据阈值截取活跃段，自动合并相邻的短间距段，并最后利用长度和人声抬升滤波器过滤出高纯净度的歌声片段。
 
 ---
 ---
@@ -156,11 +177,26 @@ python song_marker.py \
 ## English Version
 
 ### Core Features
-* **Integrated Pipeline**: Downloads, extracts, and analyzes Bilibili streams end-to-end with a single CLI command.
+* **Interactive Web UI**: Features a beautiful, lightweight Gradio web interface for slider parameter tuning and instant visual results.
+* **Integrated Pipeline**: Downloads, extracts, and analyzes Bilibili streams end-to-end with a single CLI command or a single click on the web page.
 * **Network & Bandwidth Optimization**: Defaults to Bilibili's `worstaudio` format (e.g. 67kbps mono stream), downloading multi-hour playbacks using minimal bandwidth.
 * **Persistent Smart Cache**: Automatically extracts Bilibili Video IDs (e.g., `BV...`). If ran repeatedly on the same URL, it skips downloading entirely and processes the cached file in **under 2 seconds**!
 * **Acoustic Loudness Lift Filter**: Employs a relative dynamic loudness threshold to eliminate speech/talking false-positives under loud background music (BGM).
 * **Anti-Disconnection**: Fortified with infinite segment retries (`--fragment-retries infinite`) to bypass aggressive Bilibili CDN rate-limiting on playbacks.
+
+---
+
+### ☁️ Free Web UI Cloud Deployment (Hugging Face Spaces)
+
+You can host this tool as a fully public Web UI cloud application for **100% free** using Hugging Face Spaces! You do not need to host or pay for any dedicated VMs or server environments.
+
+#### One-Minute Setup Guide:
+1. Register and sign in to [Hugging Face](https://huggingface.co/).
+2. Click your profile avatar on the top right, and choose **New Space**.
+3. Choose a Space name (e.g., `bili-song-light`), and select **Gradio** as the SDK.
+4. Keep the default **CPU Basic (Free / Always Free)** option selected under Space Hardware.
+5. Once created, go to the Space settings and link it directly to your GitHub repository (`xdtdaniel/bili-song-light`) for automatic deployment!
+6. *The Space container will automatically read `packages.txt` to install ffmpeg, install all dependencies in `requirements.txt`, and deploy your online Gradio Web UI.*
 
 ---
 
@@ -218,7 +254,13 @@ python -m pip install -r requirements.txt
 
 ### Quick Start
 
-#### 1. Run via Bilibili Playback URL
+#### 1. Run local Web UI
+To run the Gradio interactive interface locally in your browser:
+```bash
+python app.py
+```
+
+#### 2. Run via Bilibili Playback URL
 Provide the Bilibili URL directly. The tool will download the lowest bandwidth stream format to the local `work/` directory, cache it, and execute segment identification:
 ```bash
 python song_marker.py \
@@ -233,7 +275,7 @@ python song_marker.py \
 ```
 *(On subsequent runs of the same URL, the download is skipped entirely and runs instantly!).*
 
-#### 2. Run via Local Video/Audio File
+#### 3. Run via Local Video/Audio File
 If you already have a pre-downloaded `.mp4`, `.m4a`, `.mp3` or `.wav` file on your disk:
 ```bash
 python song_marker.py \
