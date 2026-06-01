@@ -55,8 +55,49 @@ def download_audio(
     downloader: str | None,
     downloader_args: str | None,
 ) -> Path:
-    require_command("yt-dlp")
     target = output_dir / f"{video_id}.%(ext)s"
+    
+    # Try importing yt_dlp for pure Python execution
+    try:
+        import yt_dlp
+        
+        ydl_opts = {
+            'format': format_selector,
+            'outtmpl': str(target),
+            'noplaylist': True,
+            'retries': retries,
+            'fragment_retries': float('inf'),
+            'quiet': True,
+            'no_warnings': True,
+        }
+        
+        # Check if aria2c is actually installed before using it
+        import shutil
+        actual_downloader = downloader
+        if downloader == "aria2c" and not shutil.which("aria2c"):
+            print("Warning: aria2c downloader requested but not found in PATH. Falling back to native downloader.")
+            actual_downloader = None
+            downloader_args = None
+            
+        if actual_downloader:
+            ydl_opts['external_downloader'] = actual_downloader
+        if downloader_args:
+            ydl_opts['external_downloader_args'] = {'default': downloader_args.split(':')[-1].split()}
+        if http_chunk_size:
+            ydl_opts['http_chunk_size'] = http_chunk_size
+            
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(url, download=True)
+            filename = ydl.prepare_filename(info_dict)
+            downloaded_path = Path(filename)
+            if downloaded_path.exists():
+                return downloaded_path
+                
+    except Exception as exc:
+        print(f"Python yt-dlp API failed or not available ({exc}). Falling back to CLI...")
+        
+    # CLI fallback
+    require_command("yt-dlp")
     cmd = [
         "yt-dlp",
         "--no-playlist",
@@ -77,10 +118,12 @@ def download_audio(
     if http_chunk_size:
         cmd[1:1] = ["--http-chunk-size", http_chunk_size]
     run(cmd)
+    
     matches = sorted(path for path in output_dir.glob(f"{video_id}.*") if not path.name.endswith(".part") and path.suffix not in (".wav", ".part", ".ytdl"))
     if not matches:
         raise RuntimeError("yt-dlp finished but no source audio/video file was found.")
     return matches[0]
+
 
 
 def convert_to_wav(source: Path, wav_path: Path) -> None:
