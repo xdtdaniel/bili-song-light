@@ -20,9 +20,9 @@ A robust, heuristic-based digital signal processing (DSP) tool to automatically 
 ## Quick Navigation / 快速导航
 
 * **[中文版说明 (Chinese Version)](#中文版说明)**
-  * [核心特性](#核心特性) | [免费网页端部署](#-免费网页端云部署-hugging-face-spaces) | [跨平台安装步骤](#跨平台环境准备) | [快速上手](#快速上手) | [调参建议](#调参建议) | [运行原理](#算法运行原理-dsp-信号处理)
+  * [核心特性](#核心特性) | [Colab 在线运行](#-google-colab-在线运行) | [免费网页端部署](#-免费网页端云部署-hugging-face-spaces) | [跨平台安装步骤](#跨平台环境准备) | [快速上手](#快速上手) | [调参建议](#调参建议) | [运行原理](#算法运行原理-dsp-信号处理)
 * **[English Version](#english-version)**
-  * [Core Features](#core-features) | [Free Web UI Cloud Deployment](#-free-web-ui-cloud-deployment-hugging-face-spaces) | [Quick Start](#quick-start) | [Parameter Tuning](#parameter-tuning-1) | [Under The Hood](#under-the-hood-dsp-theory)
+  * [Core Features](#core-features) | [Colab Online Run](#-google-colab-online-run) | [Free Web UI Cloud Deployment](#-free-web-ui-cloud-deployment-hugging-face-spaces) | [Quick Start](#quick-start) | [Parameter Tuning](#parameter-tuning-1) | [Under The Hood](#under-the-hood-dsp-theory)
 
 ---
 
@@ -49,6 +49,20 @@ A robust, heuristic-based digital signal processing (DSP) tool to automatically 
 4. 硬件层级（Space Hardware）保持选择默认的 **CPU Basic (Free / 永久免费)**。
 5. 创建空间后，在页面中选择直接关联同步你的 GitHub 仓库（`xdtdaniel/bili-song-light`）即可完成全自动部署与后续持续构建更新！
 6. *云空间将自动读取 `packages.txt` 安装 ffmpeg，并加载 `app.py` 开启你专属的在线唱歌标记小网页！*
+
+---
+
+### 🚀 Google Colab 在线运行
+
+你可以直接在浏览器中使用 Google Colab 免费运行本项目，无需安装任何本地 Python 环境或依赖：
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/xdtdaniel/bili-song-light/blob/main/bili-song-light.ipynb)
+
+#### 使用步骤：
+1. 点击上方的 **Open In Colab** 按钮打开 Notebook。
+2. 依次点击运行 **Step 1**（安装依赖）和 **Step 2**（载入处理逻辑）的代码单元格。
+3. 在 **Step 3** 的表单中输入 B 站录播的播放 URL，并使用滑块微调各项声学参数。
+4. 运行 Step 3 的单元格，即可在下方实时查看输出的 Markdown 唱歌片段表格！
 
 ---
 
@@ -208,6 +222,20 @@ You can host this tool as a fully public Web UI cloud application for **100% fre
 4. Keep the default **CPU Basic (Free / Always Free)** option selected under Space Hardware.
 5. Once created, go to the Space settings and link it directly to your GitHub repository (`xdtdaniel/bili-song-light`) for automatic deployment!
 6. *The Space container will automatically read `packages.txt` to install ffmpeg, install all dependencies in `requirements.txt`, and deploy your online Gradio Web UI.*
+
+---
+
+### 🚀 Google Colab Online Run
+
+You can run this project directly in your browser using Google Colab for free, without installing any local Python environment or dependencies:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/xdtdaniel/bili-song-light/blob/main/bili-song-light.ipynb)
+
+#### Steps:
+1. Click the **Open In Colab** badge above to open the Notebook.
+2. Run the code cells in **Step 1** (install dependencies) and **Step 2** (define core logic) sequentially.
+3. Paste your Bilibili video URL in **Step 3**'s form field and adjust parameter settings using the sliders.
+4. Run the Step 3 cell to view the generated Markdown singing segments table in real-time!
 
 ---
 
